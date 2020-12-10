@@ -1,7 +1,5 @@
-package no.trulsjor.wordfrequencycounterpear
+package no.trulsjor.keywordfrequencycounter
 
-import no.trulsjor.wordfrequencycounter.Configuration
-import no.trulsjor.wordfrequencycounter.parseDirectories
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

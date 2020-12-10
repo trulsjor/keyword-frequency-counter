@@ -1,4 +1,4 @@
-package no.trulsjor.wordfrequencycounter
+package no.trulsjor.keywordfrequencycounter
 
 import kotlinx.coroutines.runBlocking
 import org.apache.tika.metadata.Metadata
@@ -53,7 +53,7 @@ private fun File.filesInDir(): Sequence<File> =
 private fun parseToWordFrequencyFile(file: File, keywords: List<String>): WordFrequencyFile {
     val parser = AutoDetectParser()
     val metadata = Metadata()
-    val handler = WordFrequencyContentHandler(BodyContentHandler(), metadata, keywords)
+    val handler = KeywordFrequencyContentHandler(BodyContentHandler(), metadata, keywords)
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
     return WordFrequencyFile(file.name, keywords.map { it to metadata[it].toInt() }.toMap())
 }

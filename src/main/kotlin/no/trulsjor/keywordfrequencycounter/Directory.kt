@@ -1,4 +1,4 @@
-package no.trulsjor.wordfrequencycounter
+package no.trulsjor.keywordfrequencycounter
 
 import java.io.File
 

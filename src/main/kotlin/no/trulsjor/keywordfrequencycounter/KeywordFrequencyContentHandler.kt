@@ -1,4 +1,4 @@
-package no.trulsjor.wordfrequencycounter
+package no.trulsjor.keywordfrequencycounter
 
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.sax.ContentHandlerDecorator
@@ -6,7 +6,7 @@ import org.xml.sax.ContentHandler
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 
-class WordFrequencyContentHandler(
+class KeywordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
     private val keywords: List<String>

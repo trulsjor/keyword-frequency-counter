@@ -1,14 +1,14 @@
-package no.trulsjor.wordfrequencycounter
+package no.trulsjor.keywordfrequencycounter
 
 import org.apache.tika.metadata.Metadata
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class WordFrequencyContentHandlerTest {
+internal class KeywordFrequencyContentHandlerTest {
 
     @Test
     internal fun `should trim unwanted characters from string`() {
-        val contentHandler = WordFrequencyContentHandler(Metadata())
+        val contentHandler = KeywordFrequencyContentHandler(Metadata())
         val str = "this-is. the/String(yEs i'm SERIOUS!!".toCharArray()
         contentHandler.characters(str, 0, str.size)
         Assertions.assertThat(contentHandler.doc.joinToString(" ")).isEqualTo("this is the string yes i m serious")
@@ -17,7 +17,7 @@ internal class WordFrequencyContentHandlerTest {
     @Test
     internal fun `should put matches in metadata`() {
         val metadata = Metadata()
-        val contentHandler = WordFrequencyContentHandler(metadata, "you", "follow", "the strangest tribe")
+        val contentHandler = KeywordFrequencyContentHandler(metadata, "you", "follow", "the strangest tribe")
         val str = ("It's five below in evidence\n" +
                 "the winded eves and sideways snow\n" +
                 "his eminence has yet to show\n" +
