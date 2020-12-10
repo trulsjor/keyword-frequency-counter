@@ -6,7 +6,6 @@ import org.xml.sax.ContentHandler
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 
-
 class WordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
@@ -15,7 +14,7 @@ class WordFrequencyContentHandler(
 
     ContentHandlerDecorator(handler) {
 
-    internal constructor(metadata: Metadata, vararg keywords:String) : this(DefaultHandler(), metadata, keywords.asList()) {}
+    internal constructor(metadata: Metadata, vararg keywords: String) : this(DefaultHandler(), metadata, keywords.asList()) {}
 
     internal val doc = mutableListOf<String>()
 
@@ -26,7 +25,7 @@ class WordFrequencyContentHandler(
             doc.addAll(text.split(" ")
                 .asSequence()
                 .filter(String::isNotBlank)
-                .map { it.replace("\n"," ")  }
+                .map { it.replace("\n", " ") }
                 .map { it.replace("-", " ") }
                 .map { it.replace(",", " ") }
                 .map { it.replace(".", " ") }
@@ -56,9 +55,6 @@ class WordFrequencyContentHandler(
         keywords.forEach { keyword ->
             val countRegex = Regex(" $keyword ").findAll(words).count()
             metadata.add(keyword, countRegex.toString())
-
         }
     }
-
-
 }

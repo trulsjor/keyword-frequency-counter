@@ -9,8 +9,8 @@ internal class ApplicationTest {
 
     class ConfigurationTest {
         private val defaultProps = mapOf(
-            "path.input.directory" to "src/test/resources/folderL1/",
-            "path.input.keywords" to "src/test/resources/folderL1/keywords.txt"
+            "path.input.directory" to "src/test/resources/root/",
+            "path.input.keywords" to "src/test/resources/root/keywords.txt"
         )
 
         private fun withProps(test: () -> Unit) {
@@ -28,13 +28,13 @@ internal class ApplicationTest {
         internal fun `should parse directory for keywords`() {
             withProps() {
                 val configuration = Configuration()
-                assertThat(configuration.paths.inputDir).isEqualTo("src/test/resources/folderL1/")
-                assertThat(configuration.paths.keywordsFile).isEqualTo("src/test/resources/folderL1/keywords.txt")
+                assertThat(configuration.paths.inputDir).isEqualTo("src/test/resources/root/")
+                assertThat(configuration.paths.keywordsFile).isEqualTo("src/test/resources/root/keywords.txt")
 
                 val directories = parseDirectories(configuration.paths.keywordsFile, configuration.paths.inputDir)
                 assertThat(directories).hasSize(1)
-                val directory = directories.first();
-                assertThat(directory.directoryName).isEqualTo("folderL2")
+                val directory = directories.first()
+                assertThat(directory.directoryName).isEqualTo("directory")
                 assertThat(directory.totalFor("radiohead")).isEqualTo(68)
                 assertThat(directory.totalFor("amnesiac")).isEqualTo(22)
                 assertThat(directory.totalFor("pyramid song")).isEqualTo(51)

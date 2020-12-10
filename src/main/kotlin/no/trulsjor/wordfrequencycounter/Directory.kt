@@ -9,9 +9,6 @@ class WordFrequencyFile(
     internal fun matchesFor(keyword: String) = matches.getOrDefault(keyword, 0)
     internal fun total() = matches.map { it.value }.sum()
     internal fun rowAsCSV() = matches.entries.map { "$fileName,${it.key},${it.value}" }
-
-
-
 }
 
 class Directory(
@@ -30,9 +27,5 @@ class Directory(
                 writer.println(line)
             }
         }
-
-
     }
 }
-
-

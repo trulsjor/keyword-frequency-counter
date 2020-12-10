@@ -7,7 +7,6 @@ import org.apache.tika.parser.ParseContext
 import org.apache.tika.sax.BodyContentHandler
 import java.io.File
 
-
 fun main() = runBlocking {
     val config = Configuration()
     val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
@@ -58,6 +57,3 @@ private fun parseToWordFrequencyFile(file: File, keywords: List<String>): WordFr
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
     return WordFrequencyFile(file.name, keywords.map { it to metadata[it].toInt() }.toMap())
 }
-
-
-
