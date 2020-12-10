@@ -6,29 +6,36 @@ import org.junit.jupiter.api.Test
 internal class ApplicationTest {
 
     class ConfigurationTest {
-        private val defaultProps = mapOf(
+        private val props = mapOf(
             "path.input.directory" to "src/test/resources/root/",
             "path.input.keywords" to "src/test/resources/root/keywords.txt"
         )
 
         private fun withProps(test: () -> Unit) {
-            val mergedProps = defaultProps
-            for ((k, v) in mergedProps) {
+
+            for ((k, v) in props) {
                 System.getProperties()[k] = v
             }
             test()
-            for ((k, _) in mergedProps) {
+            for ((k, _) in props) {
                 System.getProperties().remove(k)
             }
         }
 
         @Test
-        internal fun `should parse directory for keywords`() {
+        internal fun `should pick up props`() {
             withProps() {
                 val configuration = Configuration()
                 assertThat(configuration.paths.inputDir).isEqualTo("src/test/resources/root/")
                 assertThat(configuration.paths.keywordsFile).isEqualTo("src/test/resources/root/keywords.txt")
+            }
+        }
 
+
+        @Test
+        internal fun `should parse directory for keywords`() {
+            withProps() {
+                val configuration = Configuration()
                 val directories = parseDirectories(configuration.paths.keywordsFile, configuration.paths.inputDir)
                 assertThat(directories).hasSize(1)
                 val directory = directories.first()
