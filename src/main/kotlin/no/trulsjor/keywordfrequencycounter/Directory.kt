@@ -2,7 +2,7 @@ package no.trulsjor.keywordfrequencycounter
 
 import java.io.File
 
-class WordFrequencyFile(
+class KeywordFrequencyFile(
     private val fileName: String,
     private val matches: Map<String, Int>
 ) {
@@ -13,14 +13,14 @@ class WordFrequencyFile(
 
 class Directory(
     internal val directoryName: String,
-    private val wordFrequencyFiles: List<WordFrequencyFile>
+    private val keywordFrequencyFiles: List<KeywordFrequencyFile>
 ) {
-    internal fun totalFor(keyword: String): Int = wordFrequencyFiles.map { it.matchesFor(keyword) }.sum()
-    internal fun grandTotal(): Int = wordFrequencyFiles.map { it.total() }.sum()
+    internal fun totalFor(keyword: String): Int = keywordFrequencyFiles.map { it.matchesFor(keyword) }.sum()
+    internal fun grandTotal(): Int = keywordFrequencyFiles.map { it.total() }.sum()
 
-    internal fun writeFile(path: File) {
+    internal fun writeCSVFile(path: File) {
 
-        val matches = wordFrequencyFiles.flatMap { it.rowAsCSV() }.toMutableList()
+        val matches = keywordFrequencyFiles.flatMap { it.rowAsCSV() }.toMutableList()
         matches.add(0, "File,Keyword,Count")
         path.resolve("k_$directoryName.csv").printWriter().use { writer ->
             matches.forEach { line ->

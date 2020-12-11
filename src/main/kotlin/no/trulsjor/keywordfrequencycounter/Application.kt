@@ -11,7 +11,7 @@ fun main() = runBlocking {
     val config = Configuration()
     val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
     val outputPath = config.paths.outputDir
-    writeGrandTotalToCSVFile(File(outputPath).resolve("grandtotal.csv"), directories)
+    writeGrandTotalToCSV(File(outputPath).resolve("grandtotal.csv"), directories)
     writeEachDirectoryToCSV(File(outputPath), directories)
 }
 
@@ -20,9 +20,9 @@ internal fun parseDirectories(
     inputPath: String
 ): List<Directory> {
     val keywords = File(keywordPath).readLines()
-    return inputPath.subDirsOf().map { dir ->
-        val allMatchesInDirectory = dir.filesInDir().map { parseToWordFrequencyFile(it, keywords) }.toList()
-        Directory(dir.name, allMatchesInDirectory)
+    return File(inputPath).subDirsOf().map { dir ->
+        val allKeywordFrequencyFilesInDir = dir.filesInDir().map { parseKeywordFrequencyFile(it, keywords) }
+        Directory(dir.name, allKeywordFrequencyFilesInDir.toList())
     }.toList()
 }
 
@@ -30,10 +30,10 @@ private fun writeEachDirectoryToCSV(
     outputPath: File,
     directories: List<Directory>
 ) {
-    directories.sortedByDescending { it.grandTotal() }.forEach { it.writeFile(outputPath) }
+    directories.sortedByDescending { it.grandTotal() }.forEach { it.writeCSVFile(outputPath) }
 }
 
-private fun writeGrandTotalToCSVFile(
+private fun writeGrandTotalToCSV(
     outputPath: File,
     directories: List<Directory>
 ) {
@@ -44,16 +44,16 @@ private fun writeGrandTotalToCSVFile(
     }
 }
 
-private fun String.subDirsOf(): Sequence<File> =
-    File(this).walkTopDown().maxDepth(1).filter { it.isDirectory }.filter { it != File(this) }
+private fun File.subDirsOf(): Sequence<File> =
+    this.walkTopDown().maxDepth(1).filter { it.isDirectory }.filter { this != it }
 
 private fun File.filesInDir(): Sequence<File> =
-    File(this.absolutePath).walkTopDown().maxDepth(1).filterNot { it.isDirectory }
+   this.walkTopDown().maxDepth(1).filterNot { it.isDirectory }
 
-private fun parseToWordFrequencyFile(file: File, keywords: List<String>): WordFrequencyFile {
+private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): KeywordFrequencyFile {
     val parser = AutoDetectParser()
     val metadata = Metadata()
     val handler = KeywordFrequencyContentHandler(BodyContentHandler(), metadata, keywords)
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
-    return WordFrequencyFile(file.name, keywords.map { it to metadata[it].toInt() }.toMap())
+    return KeywordFrequencyFile(file.name, keywords.map { it to metadata[it].toInt() }.toMap())
 }
