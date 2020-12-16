@@ -26,8 +26,8 @@ internal class ApplicationTest {
         internal fun `should pick up props`() {
             withProps() {
                 val configuration = Configuration()
-                assertThat(configuration.paths.inputDir).isEqualTo("src/test/resources/root/")
-                assertThat(configuration.paths.keywordsFile).isEqualTo("src/test/resources/root/keywords.txt")
+                assertThat(configuration.paths.inputDir).isEqualTo(props["path.input.directory"])
+                assertThat(configuration.paths.keywordsFile).isEqualTo(props["path.input.keywords"])
             }
         }
 
