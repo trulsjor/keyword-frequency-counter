@@ -11,7 +11,7 @@ internal class KeywordFrequencyContentHandlerTest {
         val contentHandler = KeywordFrequencyContentHandler(Metadata())
         val str = "this-is. the/String(yEs i'm SERIOUS!!".toCharArray()
         contentHandler.characters(str, 0, str.size)
-        Assertions.assertThat(contentHandler.doc.joinToString(" ")).isEqualTo("this is the string yes i m serious")
+        Assertions.assertThat(contentHandler.textNormalizer.normalize()).isEqualTo(" this is the string yes i m serious ")
     }
 
     @Test
