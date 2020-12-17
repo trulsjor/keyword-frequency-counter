@@ -12,7 +12,6 @@ fun main() = runBlocking {
     val config = Configuration()
     val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
     val outputPath = config.paths.outputDir
-
     writeCSVFiles(File(outputPath), directories)
 }
 

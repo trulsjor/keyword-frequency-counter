@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm").version("1.3.72")
-    kotlin("plugin.serialization").version("1.3.72")
+    kotlin("jvm").version("1.4.20")
+    kotlin("plugin.serialization").version("1.4.20")
     jacoco
     application
     id("com.github.johnrengelman.shadow").version("5.2.0")
@@ -53,7 +53,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict", "-Xuse-experimental=io.ktor.locations.KtorExperimentalLocationsAPI", "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI", "-Xuse-experimental=kotlinx.serialization.UnstableDefault")
-        jvmTarget = "1.8"
+        jvmTarget = "13"
     }
 }
 
