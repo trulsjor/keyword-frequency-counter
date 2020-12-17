@@ -12,6 +12,8 @@ plugins {
 repositories {
     jcenter()
     maven("https://jitpack.io")
+    maven("https://dl.bintray.com/mipt-npm/dataforge")
+    maven("https://dl.bintray.com/mipt-npm/kscience")
     mavenCentral()
 }
 
@@ -42,7 +44,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.19")
     implementation("org.apache.tika:tika-parsers:$tikaVersion")
-
+    implementation("kscience.plotlykt:plotlykt-core:0.3.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")

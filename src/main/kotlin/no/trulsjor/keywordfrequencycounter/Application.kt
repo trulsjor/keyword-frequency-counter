@@ -1,6 +1,7 @@
 package no.trulsjor.keywordfrequencycounter
 
 import kotlinx.coroutines.runBlocking
+import no.trulsjor.keywordfrequencycounter.tikahandler.KeywordFrequencyContentHandler
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.AutoDetectParser
 import org.apache.tika.parser.ParseContext
@@ -36,7 +37,6 @@ private fun writeCSVFiles(
     }
     writeCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
 }
-
 
 private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): KeywordFrequencyFile {
     val parser = AutoDetectParser()

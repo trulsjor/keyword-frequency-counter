@@ -1,4 +1,4 @@
-package no.trulsjor.keywordfrequencycounter
+package no.trulsjor.keywordfrequencycounter.tikahandler
 
 class TextNormalizer {
 

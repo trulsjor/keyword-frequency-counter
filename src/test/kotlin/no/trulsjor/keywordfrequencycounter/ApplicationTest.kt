@@ -30,7 +30,6 @@ internal class ApplicationTest {
         }
     }
 
-
     @Test
     internal fun `should parse directory for keywords`() {
         withProps() {

@@ -1,4 +1,4 @@
-package no.trulsjor.keywordfrequencycounter
+package no.trulsjor.keywordfrequencycounter.tikahandler
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -26,7 +26,4 @@ internal class TextNormalizerTest {
         normalizer.append("A text containing digits 123,45:524, and 1 000 000 is ok....!   ")
         Assertions.assertThat(normalizer.normalize()).isEqualTo("a text containing digits 123 45 524 and 1 000 000 is ok")
     }
-
-
 }
-

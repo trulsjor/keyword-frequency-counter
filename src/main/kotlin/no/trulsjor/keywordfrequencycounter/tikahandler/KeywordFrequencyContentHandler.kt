@@ -1,4 +1,4 @@
-package no.trulsjor.keywordfrequencycounter
+package no.trulsjor.keywordfrequencycounter.tikahandler
 
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.sax.ContentHandlerDecorator
@@ -35,7 +35,6 @@ class KeywordFrequencyContentHandler(
         }
     }
 
-
     @Throws(SAXException::class)
     override fun endDocument() {
         super.endDocument()
@@ -43,7 +42,7 @@ class KeywordFrequencyContentHandler(
         keywords.forEach { keyword ->
             val allMatchesCount = Regex("\\b$keyword\\b").findAll(words).count()
             val context =
-                Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList();
+                Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList()
             metadata.add(keyword, allMatchesCount.toString())
             context.forEach {
                 metadata.add("$keyword-context", it)
@@ -54,7 +53,6 @@ class KeywordFrequencyContentHandler(
     private fun getContextFor(result: MatchResult, words: String): String {
         val start = (result.range.first - contextLengthBefore).coerceAtLeast(0)
         val end = (result.range.last + contextLengthAfter).coerceAtMost(words.length - 1)
-        return words.substring(start, end).replace(result.value, result.value.toUpperCase());
-
+        return words.substring(start, end).replace(result.value, result.value.toUpperCase())
     }
 }

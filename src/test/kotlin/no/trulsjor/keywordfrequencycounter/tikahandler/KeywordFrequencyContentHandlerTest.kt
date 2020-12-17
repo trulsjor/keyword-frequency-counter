@@ -1,4 +1,4 @@
-package no.trulsjor.keywordfrequencycounter
+package no.trulsjor.keywordfrequencycounter.tikahandler
 
 import org.apache.tika.metadata.Metadata
 import org.assertj.core.api.Assertions
