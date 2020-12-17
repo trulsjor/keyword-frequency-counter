@@ -9,7 +9,10 @@ import org.xml.sax.helpers.DefaultHandler
 class KeywordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
-    private val keywords: List<String>
+    private val keywords: List<String>,
+    private val contextLengthBefore: Int = 15,
+    private val contextLengthAfter: Int = 15
+
 ) :
 
     ContentHandlerDecorator(handler) {
@@ -41,8 +44,19 @@ class KeywordFrequencyContentHandler(
         super.endDocument()
         val words = textNormalizer.normalize()
         keywords.forEach { keyword ->
-            val countRegex = Regex(" $keyword ").findAll(words).count()
-            metadata.add(keyword, countRegex.toString())
+            val allMatchesCount = Regex(" $keyword ").findAll(words).count()
+            val context = Regex(" $keyword ").findAll(words).map { result -> getContextFor(result, words) }.toList();
+            metadata.add(keyword, allMatchesCount.toString())
+            context.forEach {
+                metadata.add("$keyword-context", it)
+            }
         }
+    }
+
+    private fun getContextFor(result: MatchResult, words: String): String {
+        val start = (result.range.first - contextLengthBefore).coerceAtLeast(0)
+        val end = (result.range.last + contextLengthAfter).coerceAtMost(words.length - 1)
+        return words.substring(start, end).replace(result.value, result.value.toUpperCase());
+
     }
 }
