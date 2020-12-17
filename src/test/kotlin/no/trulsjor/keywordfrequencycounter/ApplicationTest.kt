@@ -39,14 +39,14 @@ internal class ApplicationTest {
             assertThat(directories).hasSize(1)
             val directory = directories.first()
             assertThat(directory.directoryName).isEqualTo("directory")
-            assertThat(directory.totalFor("radiohead")).isEqualTo(68)
-            assertThat(directory.totalFor("amnesiac")).isEqualTo(22)
-            assertThat(directory.totalFor("pyramid song")).isEqualTo(51)
+            assertThat(directory.totalFor("radiohead")).isEqualTo(83)
+            assertThat(directory.totalFor("amnesiac")).isEqualTo(25)
+            assertThat(directory.totalFor("pyramid song")).isEqualTo(61)
             assertThat(directory.totalFor("thom yorke")).isEqualTo(9)
             assertThat(directory.totalFor("volume 19 number 1 march 2013")).isEqualTo(1)
             assertThat(directory.totalFor("genius")).isEqualTo(2)
             assertThat(directory.totalFor("assistant")).isEqualTo(1)
-            assertThat(directory.grandTotal()).isEqualTo(154)
+            assertThat(directory.grandTotal()).isEqualTo(182)
         }
     }
 }

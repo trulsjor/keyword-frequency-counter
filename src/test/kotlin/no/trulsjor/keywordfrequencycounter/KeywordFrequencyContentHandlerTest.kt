@@ -7,14 +7,6 @@ import org.junit.jupiter.api.Test
 internal class KeywordFrequencyContentHandlerTest {
 
     @Test
-    internal fun `should trim unwanted characters from string`() {
-        val contentHandler = KeywordFrequencyContentHandler(Metadata())
-        val str = "this-is. the/String(yEs i'm SERIOUS!!".toCharArray()
-        contentHandler.characters(str, 0, str.size)
-        Assertions.assertThat(contentHandler.textNormalizer.normalize()).isEqualTo(" this is the string yes i m serious ")
-    }
-
-    @Test
     internal fun `should put matches in metadata`() {
         val metadata = Metadata()
         val contentHandler = KeywordFrequencyContentHandler(metadata, "you", "follow", "the strangest tribe")
@@ -24,7 +16,7 @@ internal class KeywordFrequencyContentHandlerTest {
                 "FOLLOW the ageless tide\n" +
                 "follow the angled light\n" +
                 "follow the strangest tribe\n" +
-                "it's 6:00 AM" +
+                "it's 6:00 AM\n" +
                 "you're waiting for\n" +
                 "you've had your feast...you're wanting more\n" +
                 "follow the wayward mile\n" +
@@ -37,6 +29,6 @@ internal class KeywordFrequencyContentHandlerTest {
         contentHandler.endDocument()
         Assertions.assertThat(metadata["follow"]).isEqualTo("9")
         Assertions.assertThat(metadata["the strangest tribe"]).isEqualTo("3")
-        Assertions.assertThat(metadata["you"]).isEqualTo("2")
+        Assertions.assertThat(metadata["you"]).isEqualTo("3")
     }
 }

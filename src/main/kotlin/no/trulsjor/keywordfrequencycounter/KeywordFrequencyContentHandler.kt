@@ -10,12 +10,12 @@ class KeywordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
     private val keywords: List<String>,
-    private val contextLengthBefore: Int = 15,
-    private val contextLengthAfter: Int = 15
+    private val contextLengthBefore: Int = 20,
+    private val contextLengthAfter: Int = 20
 
-) :
+) : ContentHandlerDecorator(handler) {
 
-    ContentHandlerDecorator(handler) {
+    private val textNormalizer = TextNormalizer()
 
     internal constructor(metadata: Metadata, vararg keywords: String) : this(
         DefaultHandler(),
@@ -23,9 +23,6 @@ class KeywordFrequencyContentHandler(
         keywords.asList()
     ) {
     }
-
-
-    internal val textNormalizer = TextNormalizer()
 
     @Throws(SAXException::class)
     override fun characters(ch: CharArray, start: Int, length: Int) {
@@ -44,8 +41,9 @@ class KeywordFrequencyContentHandler(
         super.endDocument()
         val words = textNormalizer.normalize()
         keywords.forEach { keyword ->
-            val allMatchesCount = Regex(" $keyword ").findAll(words).count()
-            val context = Regex(" $keyword ").findAll(words).map { result -> getContextFor(result, words) }.toList();
+            val allMatchesCount = Regex("\\b$keyword\\b").findAll(words).count()
+            val context =
+                Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList();
             metadata.add(keyword, allMatchesCount.toString())
             context.forEach {
                 metadata.add("$keyword-context", it)

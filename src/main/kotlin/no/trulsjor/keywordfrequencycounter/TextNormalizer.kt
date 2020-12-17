@@ -3,28 +3,12 @@ package no.trulsjor.keywordfrequencycounter
 class TextNormalizer {
 
     private val doc = mutableListOf<String>()
+    private val specialCharacters = "[\\P{IsAlphabetic}&&\\P{Digit}&&[^\\s+]]".toRegex()
 
-    internal fun append(text: String) = doc.addAll(
-        text.split(" ")
-            .asSequence()
-            .filter(String::isNotBlank)
-            .map { it.replace("\n", " ") }
-            .map { it.replace("-", " ") }
-            .map { it.replace(",", " ") }
-            .map { it.replace(".", " ") }
-            .map { it.replace("!", " ") }
-            .map { it.replace("?", " ") }
-            .map { it.replace("(", " ") }
-            .map { it.replace(")", " ") }
-            .map { it.replace("/", " ") }
-            .map { it.replace("’", " ") }
-            .map { it.replace("”", " ") }
-            .map { it.replace("“", " ") }
-            .map { it.replace("'", " ") }
-            .map { it.replace("\"", " ") }
-            .map(String::toLowerCase)
-            .map(String::trim)
-            .toList())
+    internal fun append(text: String) = doc.add(text.toLowerCase().replace(specialCharacters, " "))
 
-    internal fun normalize() = " ${doc.joinToString(" ") { i -> i.replace("\\s+".toRegex(), " ") }} "
+    internal fun normalize() =
+        doc.joinToString(" ")
+            .replace("\\s+".toRegex(), " ")
+            .trim()
 }

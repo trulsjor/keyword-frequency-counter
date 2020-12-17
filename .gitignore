@@ -51,6 +51,8 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+
 # End of https://www.gitignore.io/api/gradle,intellij
 
 .DS_Store
+**/localpaths.properties
