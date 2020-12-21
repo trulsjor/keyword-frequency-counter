@@ -10,22 +10,25 @@ import org.apache.tika.parser.AutoDetectParser
 import org.apache.tika.parser.ParseContext
 import org.apache.tika.sax.BodyContentHandler
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 suspend fun main(): Unit = coroutineScope {
     launch {
-        val config = Configuration()
-        val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
-        val outputPath = config.paths.outputDir
-        writeCSVFiles(File(outputPath), directories)
+       val millis = measureTimeMillis {
+           val config = Configuration()
+           val keywords = File(config.paths.keywordsFile).readLines()
+           val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
+           writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
+       }
+        println("Finished in ${millis} seconds")
     }
 }
 
 internal suspend fun parseDirectories(
-    keywordPath: String,
-    inputPath: String
+    inputPath: String,
+    keywords: List<String>
 ): List<Directory> {
     val directories = coroutineScope {
-        val keywords = File(keywordPath).readLines()
         File(inputPath).subDirsOf().map { dir ->
             async { parseDirectory(dir, keywords) }
         }.toList()
@@ -43,17 +46,22 @@ private suspend fun parseDirectory(
             async { parseKeywordFrequencyFile(it, keywords) }
         }.toList()
     }
-    return Directory(dir.name, allKeywordFrequencyFilesInDir.awaitAll())
+    val keywordFrequencyFiles = allKeywordFrequencyFilesInDir.awaitAll()
+    return Directory(dir.name, keywordFrequencyFiles)
 }
 
 
-private fun writeCSVFiles(
+private suspend fun writeCSVFiles(
     outputPath: File,
     directories: List<Directory>
 ) {
     directories.sortedByDescending { it.grandTotal() }.forEach {
-        writeCSVFile(outputPath.resolve("${it.directoryName}.csv"), it.asCSV())
-        writeCSVFile(outputPath.resolve("${it.directoryName}-context.csv"), it.asCSVWithContext())
+        coroutineScope {
+            launch {
+                writeCSVFile(outputPath.resolve("${it.directoryName}.csv"), it.asCSV())
+                writeCSVFile(outputPath.resolve("${it.directoryName}-context.csv"), it.asCSVWithContext())
+            }
+        }
     }
     writeCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
 }
@@ -67,7 +75,6 @@ private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): Keywo
         keywords = keywords
     )
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
-    println("Parsed ${file.parentFile.name} -  ${file.name}")
     return KeywordFrequencyFile(
         fileName = file.name,
         matches = keywords.map { it to metadata[it].toInt() }.toMap(),
