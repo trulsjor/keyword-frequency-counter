@@ -1,6 +1,10 @@
 package no.trulsjor.keywordfrequencycounter
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import no.trulsjor.keywordfrequencycounter.tikahandler.KeywordFrequencyContentHandler
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.AutoDetectParser
@@ -8,23 +12,41 @@ import org.apache.tika.parser.ParseContext
 import org.apache.tika.sax.BodyContentHandler
 import java.io.File
 
-fun main() = runBlocking {
-    val config = Configuration()
-    val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
-    val outputPath = config.paths.outputDir
-    writeCSVFiles(File(outputPath), directories)
+suspend fun main(): Unit = coroutineScope {
+    launch {
+        val config = Configuration()
+        val directories = parseDirectories(keywordPath = config.paths.keywordsFile, inputPath = config.paths.inputDir)
+        val outputPath = config.paths.outputDir
+        writeCSVFiles(File(outputPath), directories)
+    }
 }
 
-internal fun parseDirectories(
+internal suspend fun parseDirectories(
     keywordPath: String,
     inputPath: String
 ): List<Directory> {
-    val keywords = File(keywordPath).readLines()
-    return File(inputPath).subDirsOf().map { dir ->
-        val allKeywordFrequencyFilesInDir = dir.filesInDir().map { parseKeywordFrequencyFile(it, keywords) }
-        Directory(dir.name, allKeywordFrequencyFilesInDir.toList())
-    }.toList()
+    val list: List<Deferred<Directory>> = coroutineScope {
+        val keywords = File(keywordPath).readLines()
+        File(inputPath).subDirsOf().map { dir ->
+            async { toDirectory(dir, keywords) }
+        }.toList()
+
+    }
+    return list.awaitAll()
 }
+
+private suspend fun toDirectory(
+    dir: File,
+    keywords: List<String>
+): Directory {
+    val allKeywordFrequencyFilesInDir = coroutineScope {
+        dir.filesInDir().map {
+            async { parseKeywordFrequencyFile(it, keywords) }
+        }.toList()
+    }
+    return Directory(dir.name, allKeywordFrequencyFilesInDir.awaitAll().toList())
+}
+
 
 private fun writeCSVFiles(
     outputPath: File,
@@ -46,6 +68,7 @@ private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): Keywo
         keywords = keywords
     )
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
+    println("Parsed ${file.parentFile.name} -  ${file.name}")
     return KeywordFrequencyFile(
         fileName = file.name,
         matches = keywords.map { it to metadata[it].toInt() }.toMap(),
