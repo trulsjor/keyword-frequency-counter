@@ -1,6 +1,5 @@
 package no.trulsjor.keywordfrequencycounter
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -25,17 +24,17 @@ internal suspend fun parseDirectories(
     keywordPath: String,
     inputPath: String
 ): List<Directory> {
-    val list: List<Deferred<Directory>> = coroutineScope {
+    val directories = coroutineScope {
         val keywords = File(keywordPath).readLines()
         File(inputPath).subDirsOf().map { dir ->
-            async { toDirectory(dir, keywords) }
+            async { parseDirectory(dir, keywords) }
         }.toList()
 
     }
-    return list.awaitAll()
+    return directories.awaitAll()
 }
 
-private suspend fun toDirectory(
+private suspend fun parseDirectory(
     dir: File,
     keywords: List<String>
 ): Directory {
@@ -44,7 +43,7 @@ private suspend fun toDirectory(
             async { parseKeywordFrequencyFile(it, keywords) }
         }.toList()
     }
-    return Directory(dir.name, allKeywordFrequencyFilesInDir.awaitAll().toList())
+    return Directory(dir.name, allKeywordFrequencyFilesInDir.awaitAll())
 }
 
 
