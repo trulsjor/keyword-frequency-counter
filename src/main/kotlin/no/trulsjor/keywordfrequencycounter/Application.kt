@@ -11,16 +11,21 @@ import org.apache.tika.parser.ParseContext
 import org.apache.tika.sax.BodyContentHandler
 import java.io.File
 import kotlin.system.measureTimeMillis
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.toDuration
 
+@ExperimentalTime
 suspend fun main(): Unit = coroutineScope {
     launch {
-       val millis = measureTimeMillis {
-           val config = Configuration()
-           val keywords = File(config.paths.keywordsFile).readLines()
-           val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
-           writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
-       }
-        println("Finished in ${millis} seconds")
+        measureTimeMillis {
+            val config = Configuration()
+            val keywords = File(config.paths.keywordsFile).readLines()
+            val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
+            writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
+        }.also {
+            println("Finished in ${it.toDuration(DurationUnit.MILLISECONDS).inSeconds} seconds")
+        }
     }
 }
 
