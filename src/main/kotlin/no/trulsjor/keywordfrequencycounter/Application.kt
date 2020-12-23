@@ -20,7 +20,7 @@ suspend fun main(): Unit = coroutineScope {
     launch {
         measureTimeMillis {
             val config = Configuration()
-            val keywords = File(config.paths.keywordsFile).readLines()
+            val keywords = Keywords.fromFileName(File(config.paths.keywordsFile).readText())
             val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
             writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
         }.also {
@@ -31,7 +31,7 @@ suspend fun main(): Unit = coroutineScope {
 
 internal suspend fun parseDirectories(
     inputPath: String,
-    keywords: List<String>
+    keywords: Keywords
 ): List<Directory> {
     val directories = coroutineScope {
         File(inputPath).subDirsOf().map { dir ->
@@ -43,7 +43,7 @@ internal suspend fun parseDirectories(
 
 private suspend fun parseDirectory(
     dir: File,
-    keywords: List<String>
+    keywords: Keywords
 ): Directory {
     val allKeywordFrequencyFilesInDir = coroutineScope {
         dir.filesInDir().map {
@@ -69,7 +69,7 @@ private suspend fun writeCSVFiles(
     writeCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
 }
 
-private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): KeywordFrequencyFile {
+private fun parseKeywordFrequencyFile(file: File, keywords: Keywords): KeywordFrequencyFile {
     val parser = AutoDetectParser()
     val metadata = Metadata()
     val handler = KeywordFrequencyContentHandler(
@@ -80,8 +80,8 @@ private fun parseKeywordFrequencyFile(file: File, keywords: List<String>): Keywo
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
     return KeywordFrequencyFile(
         fileName = file.name,
-        matches = keywords.map { it to metadata[it].toInt() }.toMap(),
-        matchesContext = keywords.map { it to metadata.getValues("$it-context").toList() }.toMap()
+        matches = keywords.names().map { it to metadata[it].toInt() }.toMap(),
+        matchesContext = keywords.names().map { it to metadata.getValues("$it-context").toList() }.toMap()
     )
 }
 

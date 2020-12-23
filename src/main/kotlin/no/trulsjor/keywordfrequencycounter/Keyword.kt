@@ -20,9 +20,12 @@ data class Keywords(private val keywords: List<Keyword>) {
 
     fun keywordWithAlternatives() = keywords.map { it.name to it.all() }.toMap()
     fun forCategory(category: String) = keywords.filter { category == it.category }
+    fun byCategory() = keywords.map { it.category to it }.toMap()
+    fun names() = keywords.map { it.name }
 
     companion object {
-        fun of(file: String): Keywords = Yaml.default.decodeFromString(serializer(), file)
+        fun fromFileName(file: String): Keywords = Yaml.default.decodeFromString(serializer(), file)
+        fun fromNamesAsStrings(vararg keywords: String) = Keywords(keywords.map { Keyword(it) })
     }
 }
 

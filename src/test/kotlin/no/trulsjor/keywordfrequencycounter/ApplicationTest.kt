@@ -3,7 +3,6 @@ package no.trulsjor.keywordfrequencycounter
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.io.File
 
 internal class ApplicationTest {
 
@@ -37,8 +36,14 @@ internal class ApplicationTest {
     internal fun `should parse directory for keywords`() {
         runBlocking {
             val configuration = configWithTestProps()
-            val directories = parseDirectories(configuration.paths.inputDir, keywords = File(configuration.paths.keywordsFile).readLines()
+            val directories = parseDirectories(
+                configuration.paths.inputDir,
+                keywords = Keywords.fromNamesAsStrings(
+                    "radiohead", "amnesiac", "pyramid song", "thom yorke",
+                    "volume 19 number 1 march 2013", "genius", "assistant"
+                )
             )
+
             assertThat(directories).hasSize(1)
             val directory = directories.first()
             assertThat(directory.directoryName).isEqualTo("directory")

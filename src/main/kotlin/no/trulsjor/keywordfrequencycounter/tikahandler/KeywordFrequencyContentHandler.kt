@@ -1,5 +1,6 @@
 package no.trulsjor.keywordfrequencycounter.tikahandler
 
+import no.trulsjor.keywordfrequencycounter.Keywords
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.sax.ContentHandlerDecorator
 import org.xml.sax.ContentHandler
@@ -9,7 +10,7 @@ import org.xml.sax.helpers.DefaultHandler
 class KeywordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
-    private val keywords: List<String>,
+    private val keywords: Keywords,
     private val contextLengthBefore: Int = 20,
     private val contextLengthAfter: Int = 20
 
@@ -18,11 +19,10 @@ class KeywordFrequencyContentHandler(
     private val textNormalizer = TextNormalizer()
 
     internal constructor(metadata: Metadata, vararg keywords: String) : this(
-        DefaultHandler(),
-        metadata,
-        keywords.asList()
-    ) {
-    }
+        handler = DefaultHandler(),
+        metadata = metadata,
+        keywords = Keywords.fromNamesAsStrings(*keywords)
+    )
 
     @Throws(SAXException::class)
     override fun characters(ch: CharArray, start: Int, length: Int) {
@@ -39,13 +39,23 @@ class KeywordFrequencyContentHandler(
     override fun endDocument() {
         super.endDocument()
         val words = textNormalizer.normalize()
-        keywords.forEach { keyword ->
-            val allMatchesCount = Regex("\\b$keyword\\b").findAll(words).count()
-            val context =
-                Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList()
-            metadata.add(keyword, allMatchesCount.toString())
+
+        keywords.keywordWithAlternatives().forEach { entry ->
+            // val allMatchesCount = Regex("\\b$keyword\\b").findAll(words).count()
+            val allMatchesCount = entry.value.map {
+                Regex("\\b$it\\b").findAll(words).count()
+            }.sum()
+            //val context = Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList()
+            val context: List<String> = entry.value.map {
+                Regex("\\b$it\\b")
+                    .findAll(words)
+                    .map { result -> getContextFor(result, words) }
+                    .toList()
+            }.flatMap { it.toList() }
+
+            metadata.add(entry.key, allMatchesCount.toString())
             context.forEach {
-                metadata.add("$keyword-context", it)
+                metadata.add("${entry.key}-context", it)
             }
         }
     }
