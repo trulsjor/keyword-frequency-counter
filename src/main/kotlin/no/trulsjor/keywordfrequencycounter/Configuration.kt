@@ -16,7 +16,7 @@ data class Configuration(
 
     data class Paths(
 
-        val inputDir: String = config().get(Key("path.input.directory", stringType)),
+        val inputDir: String = config()[Key("path.input.directory", stringType)],
         val keywordsFile: String = config()[Key("path.input.keywords", stringType)],
         val outputDir: String = config()[Key("path.output.directory", stringType)]
     )

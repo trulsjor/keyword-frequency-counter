@@ -1,0 +1,17 @@
+keywords:
+  - name: amnesiac
+    category: album
+  - name: the bends
+    category: album
+  - name: ok computer
+    category: album
+    alternatives:
+      - okc
+  - name: kid a
+    category: album
+    alternatives:
+      - kida
+  - name: thom yorke
+    category: member
+  - name: johnny greenwood
+    category: member

@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version("1.4.20")
+    kotlin("plugin.serialization") version "1.4.20"
     application
     id("com.diffplug.gradle.spotless") version "3.28.1"
 }
@@ -37,6 +38,8 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.19")
     implementation("org.apache.tika:tika-parsers:$tikaVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("com.charleskorn.kaml:kaml:0.26.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.assertj:assertj-core:$assertJVersion")

@@ -1,7 +1,9 @@
 package no.trulsjor.keywordfrequencycounter
 
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.io.File
 
 internal class ApplicationTest {
 
@@ -10,31 +12,33 @@ internal class ApplicationTest {
         "path.input.keywords" to "src/test/resources/root/keywords.txt"
     )
 
-    private fun withProps(test: () -> Unit) {
+    private fun configWithTestProps(): Configuration {
 
         for ((k, v) in props) {
             System.getProperties()[k] = v
         }
-        test()
+
+        val configuration = Configuration()
+
         for ((k, _) in props) {
             System.getProperties().remove(k)
         }
+        return configuration
     }
 
     @Test
     internal fun `should pick up props`() {
-        withProps() {
-            val configuration = Configuration()
-            assertThat(configuration.paths.inputDir).isEqualTo(props["path.input.directory"])
-            assertThat(configuration.paths.keywordsFile).isEqualTo(props["path.input.keywords"])
-        }
+        val configuration = configWithTestProps()
+        assertThat(configuration.paths.inputDir).isEqualTo(props["path.input.directory"])
+        assertThat(configuration.paths.keywordsFile).isEqualTo(props["path.input.keywords"])
     }
 
     @Test
     internal fun `should parse directory for keywords`() {
-        withProps() {
-            val configuration = Configuration()
-            val directories = parseDirectories(configuration.paths.keywordsFile, configuration.paths.inputDir)
+        runBlocking {
+            val configuration = configWithTestProps()
+            val directories = parseDirectories(configuration.paths.inputDir, keywords = File(configuration.paths.keywordsFile).readLines()
+            )
             assertThat(directories).hasSize(1)
             val directory = directories.first()
             assertThat(directory.directoryName).isEqualTo("directory")

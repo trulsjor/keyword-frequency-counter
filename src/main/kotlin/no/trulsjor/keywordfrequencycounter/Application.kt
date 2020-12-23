@@ -37,7 +37,6 @@ internal suspend fun parseDirectories(
         File(inputPath).subDirsOf().map { dir ->
             async { parseDirectory(dir, keywords) }
         }.toList()
-
     }
     return directories.awaitAll()
 }
@@ -54,7 +53,6 @@ private suspend fun parseDirectory(
     val keywordFrequencyFiles = allKeywordFrequencyFilesInDir.awaitAll()
     return Directory(dir.name, keywordFrequencyFiles)
 }
-
 
 private suspend fun writeCSVFiles(
     outputPath: File,
