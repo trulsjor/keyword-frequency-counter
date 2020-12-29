@@ -9,7 +9,7 @@ internal class KeywordTest {
     @Test
     internal fun `get all keywords`() {
         val keywords = Keywords.fromYamlString(File("src/test/resources/keywords/radiohead.yml").readText())
-        assertThat(keywords.size()).isEqualTo(8)
+        assertThat(keywords.size()).isEqualTo(7)
     }
 
 

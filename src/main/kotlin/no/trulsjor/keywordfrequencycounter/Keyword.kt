@@ -16,7 +16,7 @@ data class Keyword(
 
 
 @Serializable
-data class Keywords( val keywords: List<Keyword>) {
+data class Keywords( val keywords: Set<Keyword>) {
     fun size() = keywords.size
 
     fun keywordWithAlternatives() = keywords.map { it.name to it.all() }.toMap()
@@ -26,7 +26,7 @@ data class Keywords( val keywords: List<Keyword>) {
     companion object {
         fun fromYamlString(yaml: String): Keywords = Yaml.default.decodeFromString(serializer(), yaml)
         fun fromYamlFileName(filename: File) = Yaml.default.decodeFromString(serializer(), filename.readText())
-        fun fromNamesAsStrings(vararg keywords: String) = Keywords(keywords.map { Keyword(it) })
+        fun fromNamesAsStrings(vararg keywords: String) = Keywords(keywords.map { Keyword(it) }.toSet())
     }
 }
 

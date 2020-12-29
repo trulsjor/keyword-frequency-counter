@@ -80,8 +80,13 @@ private fun parseKeywordFrequencyFile(file: File, keywords: Keywords): KeywordFr
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
     return KeywordFrequencyFile(
         fileName = file.name,
-        matches = keywords.keywords.map { it to metadata[it.name].toInt() }.toMap(),
-        matchesContext = keywords.keywords.map { it to metadata.getValues("${it.name}-context").toList() }.toMap()
+        matches = keywords.keywords.map {
+            Match(
+                keyword = it,
+                matchCount = metadata[it.name].toInt(),
+                matchesContext = metadata.getValues("${it.name}-context").toList()
+            )
+        }
     )
 }
 

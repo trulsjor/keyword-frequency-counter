@@ -4,12 +4,13 @@ class Directory(
     internal val directoryName: String,
     private val keywordFrequencyFiles: List<KeywordFrequencyFile>
 ) {
-    internal fun totalForKeywordWithName(keyword: String): Int = keywordFrequencyFiles.map { it.matchesFor(keyword) }.sum()
+    internal fun totalForKeywordWithName(keyword: String): Int =
+        keywordFrequencyFiles.map { it.matchesFor(keyword) }.sum()
 
     internal fun grandTotal() = keywordFrequencyFiles.map { it.total() }.sum()
     internal fun asCSV() = keywordFrequencyFiles.flatMap { it.rowAsCSV() }
     internal fun asCSVWithContext() = keywordFrequencyFiles.flatMap { it.contextRowAsCSV() }
-    internal fun getCategories(): Map<String, List<Keyword>> = keywordFrequencyFiles
+    internal fun getCategories(): Map<String, List<Match>> = keywordFrequencyFiles
         .map { it.groupByCategory() }
         .flatMap { it.entries }
         .groupBy { it.key }
@@ -20,27 +21,38 @@ class Directory(
 internal fun List<Directory>.grandTotal() =
     sortedByDescending { it.grandTotal() }.map { "${it.directoryName}, ${it.grandTotal()}" }
 
+
 class KeywordFrequencyFile(
     private val fileName: String,
-    internal val matches: Map<Keyword, Int>,
-    private val matchesContext: Map<Keyword, List<String>>
+    internal val matches: List<Match>,
 ) {
-    internal fun matchesFor(keyword: String): Int = matches
-        .mapKeys { it.key.name }
-        .getOrDefault(keyword, 0)
-
-    internal fun total() = matches.map { it.value }.sum()
-    internal fun groupByCategory() = matches.keys.groupBy { it.category }
+    internal fun matchesFor(keyword: String): Int = matches.matchesFor(keyword)
+    internal fun total() = matches.allMatchesCount()
+    internal fun groupByCategory() = matches.groupBy { it.keyword.category }
 
     internal fun rowAsCSV() =
-        matches.entries.map { entry ->
-            "$fileName, ${entry.key.name}, ${entry.key.category}, ${entry.value}"
+        matches.map { match ->
+            "$fileName, ${match.keyword.name}, ${match.keyword.category}, ${match.matchCount}"
         }
 
     internal fun contextRowAsCSV() =
-        matchesContext.entries.flatMap { entry ->
-            entry.value.map {
-                "$fileName, ${entry.key.name}, ${entry.key.category}, $it"
+        matches.flatMap { match ->
+            match.matchesContext.map {
+                "$fileName, ${match.keyword.name}, ${match.keyword.category}, $it"
             }
         }
+}
+
+class Match(
+    internal val keyword: Keyword,
+    internal val matchCount: Int,
+    internal val matchesContext: List<String>
+
+)
+
+internal fun List<Match>.matchesFor(key: String): Int {
+    return this.first { it.keyword.name == key }.matchCount
+}
+internal fun List<Match>.allMatchesCount(): Int {
+    this.map { it.matchCount }.sum()
 }
