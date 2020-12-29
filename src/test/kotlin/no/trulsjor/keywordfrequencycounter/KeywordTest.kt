@@ -12,7 +12,6 @@ internal class KeywordTest {
         assertThat(keywords.size()).isEqualTo(7)
     }
 
-
     @Test
     internal fun `get all keywords for category`() {
         val keywords = Keywords.fromYamlString(File("src/test/resources/keywords/categories.yml").readText())
@@ -31,5 +30,4 @@ internal class KeywordTest {
         val keywordsWithAlternatives = Keywords.fromYamlString(keywords).keywordWithAlternatives()["1"]
         assertThat(keywordsWithAlternatives).containsExactlyInAnyOrder("1", "2", "3", "4")
     }
-
 }

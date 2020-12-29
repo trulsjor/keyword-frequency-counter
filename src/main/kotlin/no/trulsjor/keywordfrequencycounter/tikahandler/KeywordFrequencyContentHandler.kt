@@ -41,11 +41,9 @@ class KeywordFrequencyContentHandler(
         val words = textNormalizer.normalize()
 
         keywords.keywordWithAlternatives().forEach { entry ->
-            // val allMatchesCount = Regex("\\b$keyword\\b").findAll(words).count()
             val allMatchesCount = entry.value.map {
                 Regex("\\b$it\\b").findAll(words).count()
             }.sum()
-            //val context = Regex("\\b$keyword\\b").findAll(words).map { result -> getContextFor(result, words) }.toList()
             val context: List<String> = entry.value.map {
                 Regex("\\b$it\\b")
                     .findAll(words)
