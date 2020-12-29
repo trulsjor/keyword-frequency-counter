@@ -4,6 +4,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import no.trulsjor.keywordfrequencycounter.matches.Directory
+import no.trulsjor.keywordfrequencycounter.matches.Match
+import no.trulsjor.keywordfrequencycounter.matches.MatchFile
+import no.trulsjor.keywordfrequencycounter.matches.grandTotal
 import no.trulsjor.keywordfrequencycounter.tikahandler.KeywordFrequencyContentHandler
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.AutoDetectParser
@@ -45,13 +49,13 @@ private suspend fun parseDirectory(
     dir: File,
     keywords: Keywords
 ): Directory {
-    val allKeywordFrequencyFilesInDir = coroutineScope {
+    val allMatchFilesInDir = coroutineScope {
         dir.filesInDir().map {
-            async { parseKeywordFrequencyFile(it, keywords) }
+            async { parseMatchFile(it, keywords) }
         }.toList()
     }
-    val keywordFrequencyFiles = allKeywordFrequencyFilesInDir.awaitAll()
-    return Directory(dir.name, keywordFrequencyFiles)
+    val matchFiles = allMatchFilesInDir.awaitAll()
+    return Directory(dir.name, matchFiles)
 }
 
 private suspend fun writeCSVFiles(
@@ -69,7 +73,7 @@ private suspend fun writeCSVFiles(
     writeCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
 }
 
-private fun parseKeywordFrequencyFile(file: File, keywords: Keywords): KeywordFrequencyFile {
+private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
     val parser = AutoDetectParser()
     val metadata = Metadata()
     val handler = KeywordFrequencyContentHandler(
@@ -78,7 +82,7 @@ private fun parseKeywordFrequencyFile(file: File, keywords: Keywords): KeywordFr
         keywords = keywords
     )
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
-    return KeywordFrequencyFile(
+    return MatchFile(
         fileName = file.name,
         matches = keywords.keywords.map {
             Match(
