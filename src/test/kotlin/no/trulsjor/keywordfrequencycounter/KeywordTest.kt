@@ -8,16 +8,16 @@ internal class KeywordTest {
 
     @Test
     internal fun `get all keywords`() {
-        val keywords = Keywords.fromFileName(File("src/test/resources/keywords.yml").readText())
-        assertThat(keywords.size()).isEqualTo(6)
+        val keywords = Keywords.fromYamlString(File("src/test/resources/keywords/radiohead.yml").readText())
+        assertThat(keywords.size()).isEqualTo(8)
     }
 
 
     @Test
     internal fun `get all keywords for category`() {
-        val keywords = Keywords.fromFileName(File("src/test/resources/keywords.yml").readText())
-        assertThat(keywords.forCategory("member")).hasSize(2)
-        assertThat(keywords.forCategory("album")).hasSize(4)
+        val keywords = Keywords.fromYamlString(File("src/test/resources/keywords/categories.yml").readText())
+        assertThat(keywords.forCategory("member")).hasSize(5)
+        assertThat(keywords.forCategory("album")).hasSize(9)
     }
 
     @Test
@@ -28,7 +28,7 @@ internal class KeywordTest {
                 "      - 2\n" +
                 "      - 3\n" +
                 "      - 4\n"
-        val keywordsWithAlternatives = Keywords.fromFileName(keywords).keywordWithAlternatives()["1"]
+        val keywordsWithAlternatives = Keywords.fromYamlString(keywords).keywordWithAlternatives()["1"]
         assertThat(keywordsWithAlternatives).containsExactlyInAnyOrder("1", "2", "3", "4")
     }
 

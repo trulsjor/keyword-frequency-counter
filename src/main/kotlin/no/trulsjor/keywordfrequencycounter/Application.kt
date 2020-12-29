@@ -20,7 +20,7 @@ suspend fun main(): Unit = coroutineScope {
     launch {
         measureTimeMillis {
             val config = Configuration()
-            val keywords = Keywords.fromFileName(File(config.paths.keywordsFile).readText())
+            val keywords = Keywords.fromYamlString(File(config.paths.keywordsFile).readText())
             val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
             writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
         }.also {
@@ -80,8 +80,8 @@ private fun parseKeywordFrequencyFile(file: File, keywords: Keywords): KeywordFr
     parser.parse(file.inputStream(), handler, metadata, ParseContext())
     return KeywordFrequencyFile(
         fileName = file.name,
-        matches = keywords.names().map { it to metadata[it].toInt() }.toMap(),
-        matchesContext = keywords.names().map { it to metadata.getValues("$it-context").toList() }.toMap()
+        matches = keywords.keywords.map { it to metadata[it.name].toInt() }.toMap(),
+        matchesContext = keywords.keywords.map { it to metadata.getValues("${it.name}-context").toList() }.toMap()
     )
 }
 
