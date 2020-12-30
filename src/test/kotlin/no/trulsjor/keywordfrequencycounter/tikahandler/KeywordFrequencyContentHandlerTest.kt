@@ -10,7 +10,8 @@ internal class KeywordFrequencyContentHandlerTest {
     internal fun `should put matches in metadata`() {
         val metadata = Metadata()
         val contentHandler = KeywordFrequencyContentHandler(metadata, "you", "follow", "the strangest tribe")
-        val str = ("It's five below in evidence\n" +
+        val str = (
+            "It's five below in evidence\n" +
                 "the winded eves and sideways snow\n" +
                 "his eminence has yet to show\n" +
                 "FOLLOW the ageless tide\n" +
@@ -24,7 +25,8 @@ internal class KeywordFrequencyContentHandlerTest {
                 "follow the strangest tribe\n" +
                 "follow the ancient stripe\n" +
                 "follow the angels try\n" +
-                "follow the strangest tribe").toCharArray()
+                "follow the strangest tribe"
+            ).toCharArray()
         contentHandler.characters(str, 0, str.size)
         contentHandler.endDocument()
         Assertions.assertThat(metadata["follow"]).isEqualTo("9")

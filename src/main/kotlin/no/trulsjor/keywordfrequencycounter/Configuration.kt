@@ -7,8 +7,9 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 
-private fun config() = systemProperties() overriding EnvironmentVariables overriding ConfigurationProperties.fromResource("localpaths.properties") overriding ConfigurationProperties.fromResource("paths.properties"
-    )
+private fun config() = systemProperties() overriding EnvironmentVariables overriding ConfigurationProperties.fromResource("localpaths.properties") overriding ConfigurationProperties.fromResource(
+    "paths.properties"
+)
 
 data class Configuration(
     val paths: Paths = Paths()

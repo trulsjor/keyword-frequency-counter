@@ -51,7 +51,7 @@ class KeywordFrequencyContentHandler(
 
             val allMatchesCount = entry.value
                 .map { Regex("\\b$it\\b").findAll(words).count() }.sum()
-            metadata.add("${entry.key}-count", allMatchesCount.toString())
+            metadata.add(entry.key, allMatchesCount.toString())
         }
     }
 

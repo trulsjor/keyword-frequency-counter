@@ -22,11 +22,11 @@ internal class KeywordTest {
     @Test
     internal fun `gets all keyword alternatives`() {
         val keywords = "keywords:\n" +
-                "  - name: 1\n" +
-                "    alternatives:\n" +
-                "      - 2\n" +
-                "      - 3\n" +
-                "      - 4\n"
+            "  - name: 1\n" +
+            "    alternatives:\n" +
+            "      - 2\n" +
+            "      - 3\n" +
+            "      - 4\n"
         val keywordsWithAlternatives = Keywords.fromYamlString(keywords).keywordWithAlternatives()["1"]
         assertThat(keywordsWithAlternatives).containsExactlyInAnyOrder("1", "2", "3", "4")
     }

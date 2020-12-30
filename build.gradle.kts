@@ -75,10 +75,10 @@ tasks.named("compileKotlin") {
 }
 spotless {
     kotlin {
-        ktlint("0.35.0")
+        ktlint("0.40.0")
     }
     kotlinGradle {
         target("*.gradle.kts", "buildSrc/**/*.kt*")
-        ktlint("0.35.0")
+        ktlint("0.40.0")
     }
 }

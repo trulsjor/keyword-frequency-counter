@@ -8,11 +8,11 @@ internal class CategorizationTest {
     private val matchFile = MatchFile(
         "filename",
         listOf(
-            Match(Keyword("1a", "1"), 1, emptyList(), metadata[it.name]),
-            Match(Keyword("1b", "1"), 1, emptyList(), metadata[it.name]),
-            Match(Keyword("1c", "1"), 1, emptyList(), metadata[it.name]),
-            Match(Keyword("2a", "2"), 1, emptyList(), metadata[it.name]),
-            Match(Keyword("2b", "2"), 1, emptyList(), metadata[it.name])
+            Match(Keyword("1a", "1"), 1, emptyList()),
+            Match(Keyword("1b", "1"), 1, emptyList()),
+            Match(Keyword("1c", "1"), 1, emptyList()),
+            Match(Keyword("2a", "2"), 1, emptyList()),
+            Match(Keyword("2b", "2"), 1, emptyList())
         )
     )
 

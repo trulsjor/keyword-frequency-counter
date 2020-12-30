@@ -61,7 +61,6 @@ private suspend fun parseDirectory(
     return Directory(dir.name, matchFiles)
 }
 
-
 private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
     val parser = AutoDetectParser()
     val metadata = Metadata()
@@ -76,11 +75,10 @@ private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
         matches = keywords.keywords.map {
             Match(
                 keyword = it,
-                matchCount = metadata["${it.name}-count"].toInt(),
+                matchCount = metadata[it.name].toInt(),
                 matchesContext = metadata.getValues("${it.name}-context-first").toList()
                     .zip(metadata.getValues("${it.name}-context-second").toList()),
-
-                )
+            )
         }
     )
 }

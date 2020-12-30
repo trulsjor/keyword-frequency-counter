@@ -13,7 +13,7 @@ internal class MatchFile(
             "$fileName, ${match.keyword.name}, ${match.keyword.category}, ,${match.matchCount}"
         }
 
-    internal fun contextRowAsCSV(prefix: String="") =
+    internal fun contextRowAsCSV(prefix: String = "") =
         matches.flatMap { match ->
             match.matchesContext.map {
                 "$prefix $fileName,${match.keyword.name},${match.keyword.category},${it.first},${it.second}"
