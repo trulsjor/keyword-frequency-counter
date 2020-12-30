@@ -18,7 +18,7 @@ data class Keywords(val keywords: Set<Keyword>) {
     fun size() = keywords.size
 
     fun keywordWithAlternatives() = keywords.map { it.name to it.all() }.toMap()
-    fun forCategory(category: String) = keywords.filter { category == it.category }
+    fun forCategory(category: String) = keywords.filter { it.category.contains(category) }
 
     companion object {
         fun fromYamlString(yaml: String): Keywords = Yaml.default.decodeFromString(serializer(), yaml)

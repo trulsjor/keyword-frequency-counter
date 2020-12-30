@@ -22,9 +22,9 @@ import kotlin.time.toDuration
 @ExperimentalTime
 suspend fun main(): Unit = coroutineScope {
     launch {
+        val config = Configuration()
+        val keywords = Keywords.fromYamlString(File(config.paths.keywordsFile).readText())
         measureTimeMillis {
-            val config = Configuration()
-            val keywords = Keywords.fromYamlString(File(config.paths.keywordsFile).readText())
             val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
             writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
         }.also {
@@ -70,7 +70,7 @@ private suspend fun writeCSVFiles(
             }
         }
     }
-    writeCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
+    writeGrandTotalCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
 }
 
 private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
@@ -87,9 +87,11 @@ private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
         matches = keywords.keywords.map {
             Match(
                 keyword = it,
-                matchCount = metadata[it.name].toInt(),
-                matchesContext = metadata.getValues("${it.name}-context").toList()
-            )
+                matchCount = metadata["${it.name}-count"].toInt(),
+                matchesContext = metadata.getValues("${it.name}-context-first").toList()
+                    .zip(metadata.getValues("${it.name}-context-second").toList()),
+
+                )
         }
     )
 }

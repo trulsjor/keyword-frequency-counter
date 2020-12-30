@@ -41,26 +41,31 @@ class KeywordFrequencyContentHandler(
         val words = textNormalizer.normalize()
 
         keywords.keywordWithAlternatives().forEach { entry ->
-            val allMatchesCount = entry.value.map {
-                Regex("\\b$it\\b").findAll(words).count()
-            }.sum()
-            val context: List<String> = entry.value.map {
-                Regex("\\b$it\\b")
-                    .findAll(words)
-                    .map { result -> getContextFor(result, words) }
-                    .toList()
-            }.flatMap { it.toList() }
+            entry.value
+                .map { toMatchesWithContext(it, words) }
+                .flatMap { it.toList() }
+                .forEach {
+                    metadata.add("${entry.key}-context-first", it.first.trim())
+                    metadata.add("${entry.key}-context-second", it.second.trim())
+                }
 
-            metadata.add(entry.key, allMatchesCount.toString())
-            context.forEach {
-                metadata.add("${entry.key}-context", it)
-            }
+            val allMatchesCount = entry.value
+                .map { Regex("\\b$it\\b").findAll(words).count() }.sum()
+            metadata.add("${entry.key}-count", allMatchesCount.toString())
         }
     }
 
-    private fun getContextFor(result: MatchResult, words: String): String {
+    private fun toMatchesWithContext(candidate: String, words: String): List<Pair<String, String>> {
+        return Regex("\\b$candidate\\b")
+            .findAll(words)
+            .map { result -> getContextFor(result, words) }
+            .toList()
+    }
+
+    private fun getContextFor(result: MatchResult, words: String): Pair<String, String> {
         val start = (result.range.first - contextLengthBefore).coerceAtLeast(0)
         val end = (result.range.last + contextLengthAfter).coerceAtMost(words.length - 1)
-        return words.substring(start, end).replace(result.value, result.value.toUpperCase())
+        val context = words.substring(start, end).replace(result.value, result.value.toUpperCase())
+        return result.value to context
     }
 }
