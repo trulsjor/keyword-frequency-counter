@@ -11,8 +11,8 @@ class KeywordFrequencyContentHandler(
     handler: ContentHandler,
     private val metadata: Metadata,
     private val keywords: Keywords,
-    private val contextLengthBefore: Int = 20,
-    private val contextLengthAfter: Int = 20
+    private val contextLengthBefore: Int = 30,
+    private val contextLengthAfter: Int = 30
 
 ) : ContentHandlerDecorator(handler) {
 

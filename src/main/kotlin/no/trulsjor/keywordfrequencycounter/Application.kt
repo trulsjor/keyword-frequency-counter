@@ -7,7 +7,8 @@ import kotlinx.coroutines.launch
 import no.trulsjor.keywordfrequencycounter.matches.Directory
 import no.trulsjor.keywordfrequencycounter.matches.Match
 import no.trulsjor.keywordfrequencycounter.matches.MatchFile
-import no.trulsjor.keywordfrequencycounter.matches.grandTotal
+import no.trulsjor.keywordfrequencycounter.matches.writeFullCSV
+import no.trulsjor.keywordfrequencycounter.matches.writeGrandTotalCSV
 import no.trulsjor.keywordfrequencycounter.tikahandler.KeywordFrequencyContentHandler
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.AutoDetectParser
@@ -23,10 +24,12 @@ import kotlin.time.toDuration
 suspend fun main(): Unit = coroutineScope {
     launch {
         val config = Configuration()
+        val outputPath = File(config.paths.outputDir)
         val keywords = Keywords.fromYamlString(File(config.paths.keywordsFile).readText())
         measureTimeMillis {
             val directories = parseDirectories(inputPath = config.paths.inputDir, keywords = keywords)
-            writeCSVFiles(outputPath = File(config.paths.outputDir), directories = directories)
+            directories.writeFullCSV(outputPath.resolve("full.csv"))
+            directories.writeGrandTotalCSV(outputPath.resolve("grandtotal.csv"))
         }.also {
             println("Finished in ${it.toDuration(DurationUnit.MILLISECONDS).inSeconds} seconds")
         }
@@ -58,20 +61,6 @@ private suspend fun parseDirectory(
     return Directory(dir.name, matchFiles)
 }
 
-private suspend fun writeCSVFiles(
-    outputPath: File,
-    directories: List<Directory>
-) {
-    directories.sortedByDescending { it.grandTotal() }.forEach {
-        coroutineScope {
-            launch {
-                writeCSVFile(outputPath.resolve("${it.directoryName}.csv"), it.asCSV())
-                writeCSVFile(outputPath.resolve("${it.directoryName}-context.csv"), it.asCSVWithContext())
-            }
-        }
-    }
-    writeGrandTotalCSVFile(outputPath.resolve("grandtotal.csv"), directories.grandTotal())
-}
 
 private fun parseMatchFile(file: File, keywords: Keywords): MatchFile {
     val parser = AutoDetectParser()
